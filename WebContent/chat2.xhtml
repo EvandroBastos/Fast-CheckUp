@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+	<title>Chat</title>
+
+</h:head>
+
+<h:body>
+	<h:form>
+
+		<p:panel header="Chat">
+
+			<p:poll update="pnlMessages pnlChatClosed pnlButtons" interval="1" />
+
+			<p:outputPanel id="pnlMessages">
+				<p:outputPanel rendered="#{chatMb.ready}">
+					<div id="chat"
+						style="height: 250px; width: 100%; overflow: auto; border: 1px solid #000;">
+
+						<ui:repeat var="message" value="#{chatMb.messages}">
+							<div class="msg">
+								<h:outputText value="#{message.date}" />
+								<strong><h:outputText value="#{message.author}" /> </strong>:
+								<h:outputText value="#{message.content}" />
+							</div>
+						</ui:repeat>
+
+					</div>
+
+				</p:outputPanel>
+			</p:outputPanel>
+
+			<br />
+
+			<p:outputPanel id="pnlChat">
+
+				<p:outputPanel>
+					<h:panelGrid columns="2">
+
+						<p:inputTextarea id="txaMessage" rows="4" cols="40"
+							style="width: 350px" counter="ctrMessage" maxlength="100"
+							value="#{chatMb.message}"
+							counterTemplate="{0} caracteres restantes." autoResize="false" />
+
+
+						<h:panelGrid id="pnlButtons" columns="1">
+
+							<p:commandButton value="Enviar!" style="width: 100px;"
+								disabled="#{not chatMb.ready}"
+								action="#{chatMb.sendMessage}" update="txaMessage" />
+
+							<p:commandButton value="Sair" action="#{chatMb.close}"
+								disabled="#{not chatMb.ready}" style="width: 100px;"
+								oncomplete="window.close();" update="pnlChat" />
+
+						</h:panelGrid>
+
+						<h:outputText id="ctrMessage" />
+
+					</h:panelGrid>
+
+				</p:outputPanel>
+
+				<p:outputPanel id="pnlChatClosed">
+					<h:outputText value="Chat Fechado!" rendered="#{not chatMb.ready}" />
+				</p:outputPanel>
+
+
+			</p:outputPanel>
+
+		</p:panel>
+
+	</h:form>
+
+</h:body>
+
+
+</html>

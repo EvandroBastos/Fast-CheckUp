@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Página do Atendente</title>
+
+	<script type="text/javascript">
+
+		function startChat()
+		{
+			window.open('chat2.jsf','attendantChatWindow',
+				'width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0');
+		}
+
+	</script>
+</h:head>
+
+<h:body>
+	<h:form>
+
+		<p:panel header="Login do atendente"
+			rendered="#{not attendantMb.authenticated}">
+			<h:outputLabel for="txtName" value="Login: " />
+			<br />
+			<h:inputText id="txtName" value="#{attendantMb.attendant.username}" />
+			<br />
+			<h:outputLabel for="txtPassword" value="Senha: " />
+			<br />
+			<h:inputSecret id="txtPassword"
+				value="#{attendantMb.attendant.password}" />
+			<br />
+			<h:commandButton action="#{attendantMb.signIn}" value="Entrar" />
+			<br />
+			<h:messages />
+
+		</p:panel>
+
+		<p:panel header="Home do atendente"
+			rendered="#{attendantMb.authenticated}">
+			<h:outputText value="Bem vindo (a), " />
+			<strong> <h:outputText
+					value="#{attendantMb.attendant.username}" /> </strong>!
+			&nbsp;
+			<h:commandButton action="#{attendantMb.signOut}" value="Sair" />
+			<br />
+			<br />
+
+			<p:poll id="myPoll" interval="2" update="pnlDoAttend" />
+
+			<p:outputPanel id="pnlDoAttend">
+
+				<h:outputFormat value="Usuários na fila de espera: {0}">
+					<f:param value="#{managerLocatorMb.manager.waitingUsers}" />
+				</h:outputFormat>
+
+				<br />
+				<br />
+
+				<p:commandButton value="Atender próximo usuário"
+					action="#{attendantMb.startChat}"
+					disabled="#{managerLocatorMb.manager.waitingUsers eq 0}"
+					oncomplete="startChat();" />
+
+			</p:outputPanel>
+
+		</p:panel>
+
+	</h:form>
+
+</h:body>
+
+
+</html>

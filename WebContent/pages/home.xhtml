@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Loja</title>
+	<base
+		href="//#{request.serverName}:#{request.serverPort}#{request.contextPath}/"></base>
+
+	<script type="text/javascript">
+
+		function startChat()
+		{
+			window.open('pages/chat_preview.jsf','userChatWindow',
+				'width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0');
+		}
+
+	</script>
+</h:head>
+
+<h:body>
+	<br />
+
+	<h:form>
+
+		<p:panel header="Identificação do usuário"
+			rendered="#{not userMb.authenticated}">
+			<h:outputLabel for="txtName" value="Nome: " />
+			<br />
+			<h:inputText id="txtName" required="true" value="#{userMb.user.name}"
+				requiredMessage="Favor informar um nome" />
+			<br />
+			<h:outputLabel for="txtEmail" value="E-mail: " />
+			<br />
+			<h:inputText id="txtEmail" required="true"
+				value="#{userMb.user.email}"
+				requiredMessage="favor informar um email"
+				validatorMessage="favor informar um email válido">
+				<f:validateRegex pattern="\w+@\w+(\.\w+)+" />
+			</h:inputText>
+			<br />
+			<h:commandButton action="#{userMb.signIn}" value="Entrar" />
+
+		</p:panel>
+
+		<p:panel header="Home do usuário" rendered="#{userMb.authenticated}">
+
+			<p:poll id="myPoll" interval="5" update="pnlActions" />
+			<h:outputText value="Bem vindo, " />
+			<strong> <h:outputText value="#{userMb.user.name}" /> </strong>!
+			&nbsp;
+			<h:commandButton action="#{userMb.signOut}" value="Sair" />
+			<br />
+			<br />
+			<p:outputPanel id="pnlActions">
+				<p:commandButton
+					value="#{managerLocatorMb.manager.availableAttendants gt 0 and not chatMb.ready ? 'Chat Online' : 'Chat Offline'}"
+					action="#{userMb.startChat}"
+					disabled="#{managerLocatorMb.manager.availableAttendants eq 0}"
+					oncomplete="startChat();" />
+
+
+			</p:outputPanel>
+
+		</p:panel>
+
+	</h:form>
+
+
+</h:body>
+
+</html>

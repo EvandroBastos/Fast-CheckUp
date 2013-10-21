@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Chat</title>
+
+	<script type="text/javascript">
+
+		var timer = null;
+
+        function updateMessages(xhr, status, args) 
+        {
+            if (args.newMessage)
+            {
+            	$('#chat').append('<div class="msg">[' +args.message.date+ '] <strong>'+args.message.author+'</strong>: '+args.message.content+'</div>');
+            } 
+            else if (args.close) 
+            {
+                clearInterval(timer);
+				$('#chat').remove();
+				closeChat();
+            }
+        }
+		
+
+	</script>
+</h:head>
+
+<h:body>
+	<h:form>
+
+		<p:panel header="Chat">
+
+			<div id="chat"
+				style="height: 250px; width: 100%; overflow: auto; border: 1px solid #000;"></div>
+
+			<br />
+
+			<h:messages />
+
+			<p:outputPanel id="pnlChat">
+
+				<p:outputPanel rendered="#{chatMb.ready}">
+					<h:panelGrid columns="2">
+
+						<p:inputTextarea id="txaMessage" rows="4" cols="50"
+							counter="ctrMessage" maxlength="100" value="#{chatMb.message}"
+							counterTemplate="{0} caracteres restantes." autoResize="false" />
+
+
+						<h:panelGrid columns="1">
+
+							<p:commandButton value="Enviar!" style="width: 100px;"
+								actionListener="#{chatMb.sendMessage}" update="txaMessage" />
+
+							<p:commandButton value="Sair" action="#{chatMb.close}"
+								style="width: 100px;" oncomplete="window.close();"
+								update="pnlChat" />
+
+						</h:panelGrid>
+
+						<h:outputText id="ctrMessage" />
+
+					</h:panelGrid>
+
+					<script type="text/javascript">
+						timer = setInterval("retrieveMessages()", 500);
+					</script>
+
+
+				</p:outputPanel>
+
+
+				<p:remoteCommand name="retrieveMessages"
+					actionListener="#{chatMb.retrieveLastMessage}"
+					oncomplete="updateMessages(xhr, status, args);" />
+
+				<p:remoteCommand name="closeChat" update="pnlChat" />
+
+				<h:outputText value="Chat Fechado!" rendered="#{not chatMb.ready}" />
+
+			</p:outputPanel>
+
+
+
+		</p:panel>
+
+	</h:form>
+
+</h:body>
+
+
+</html>
